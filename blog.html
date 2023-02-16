@@ -1,5 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/css/materialize.min.css">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/js/materialize.min.js"></script>
 <head>
     <meta charset="UTF-8">
     <title>Title</title>
@@ -9,27 +11,81 @@
 </body>
 <script>
     for(let i = 0; i < 10; i++){
-        addNewBlogPost(Math.floor(Math.random()*100+1))
-    }
-    function addNewBlogPost(id){
-        let title;
-        let body;
-        //let userID
+        let id = Math.floor(Math.random()*100+1);
         fetch("https://jsonplaceholder.typicode.com/posts/"+id)
             .then(response=>response.json())
-            .then(response=>{
-                title=response.title;
-                body=response.body;
-            });
+            .then(response=>addNewBlogPost(response.title, response.body, id));
+    }
+    function addNewBlogPost(title, body, id){
+        //let userID
+
         const container = document.createElement("div");
+        container.className="card grey lighten-1";
+        container.style.width="50%";
+        const titleElement = document.createElement("h3");
         {
-            const title = document.createElement("h3");
+            titleElement.innerHTML = title;
+            container.appendChild(titleElement);
+        }
+        {
+            const bodyAndComments = document.createElement("div");
+            bodyAndComments.style.display="none";
+            {
+                const bodyElement = document.createElement("div");
+                bodyElement.className="card grey lighten-2";
+                {
+                    const bodyText = document.createElement("p");
+                    bodyText.className="flow-text"
+                    bodyText.innerHTML = body;
+                    bodyElement.appendChild(bodyText);
+                }
+                bodyAndComments.appendChild(bodyElement);
+            }
+            {
+                const commentsSection = document.createElement("div");
+                const commentButton = document.createElement("button");
+                commentButton.innerHTML="Comments"
+                commentsSection.appendChild(commentButton);
+                {
+                    const comments = document.createElement("div");
+                    comments.style.display="none";
+                    fetch("https://jsonplaceholder.typicode.com/posts/"+id+"/comments")
+                        .then(response=>response.json())
+                        .then(response=>response.forEach(
+                            comment=>appendComment(comments, comment)
+                        ));
+                    commentsSection.appendChild(comments);
+                    commentButton.addEventListener("click", function(){toggleVisible(comments)});
+                    titleElement.addEventListener("click", function(){comments.style.display="none"});
+                }
+                bodyAndComments.appendChild(commentsSection);
+            }
+            container.appendChild(bodyAndComments);
+            titleElement.addEventListener("click", function(){toggleVisible(bodyAndComments)});
         }
 
+        document.body.appendChild(container);
+
+    }
+    function appendComment(parent, comment){
+        const commentElement = document.createElement("div");
+        {
+            const commenter = document.createElement("h5");
+            commenter.innerHTML = comment.name;
+            commentElement.appendChild(commenter);
+        }
+        {
+            const commentBody = document.createElement("p");
+            commentBody.innerHTML = comment.body;
+            commentElement.appendChild(commentBody);
+        }
+        parent.appendChild(commentElement);
     }
     function toggleVisible(element){
-        if(element.visible)element.visible=false;
-        else element.visible=true;
+        // console.log(element.style.display);
+        if(element.style.display=="none")
+            element.style.display = "block";
+        else element.style.display= "none";
     }
 </script>
 </html>
