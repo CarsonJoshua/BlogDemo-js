@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+
+</body>
+<script>
+    for(let i = 0; i < 10; i++){
+        addNewBlogPost(Math.floor(Math.random()*100+1))
+    }
+    function addNewBlogPost(id){
+        let title;
+        let body;
+        //let userID
+        fetch("https://jsonplaceholder.typicode.com/posts/"+id)
+            .then(response=>response.json())
+            .then(response=>{
+                title=response.title;
+                body=response.body;
+            });
+        const container = document.createElement("div");
+        {
+            const title = document.createElement("h3");
+        }
+
+    }
+    function toggleVisible(element){
+        if(element.visible)element.visible=false;
+        else element.visible=true;
+    }
+</script>
+</html>
